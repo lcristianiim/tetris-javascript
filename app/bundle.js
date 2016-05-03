@@ -28,14 +28,22 @@ function getPiece() {
     piece.init(grid, color);
 }
 
-function drawShadow() {
-    for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
-        var block = document.getElementsByClassName('column');
-        console.log(block)
-    }
-}
+// function drawShadow() {
+//     for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
+//         var block = document.getElementsByClassName('column');
+//         for (i = 0; i < block.length; i++) {
+//             if () {
+//             }
+//             block[i].style.backgroundColor = 'green';
+//         }
+//     }
+// }
+//
+// drawShadow();
+var me = helper.getPointFromBlock(10, grid);
+console.log(me);
 
-drawShadow();
+
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
@@ -90,16 +98,10 @@ function right (piece) {
     } else console.log('Right reached');
 }
 
-function downCollision (piece, grid) {
-    var block = helper.getBlock(piece.pivot, grid);
-    console.log(block);
-}
-
 module.exports = {
     down: down,
     left: left,
-    right: right,
-    downCollision: downCollision
+    right: right
 }
 
 },{"./helper.js":3}],3:[function(require,module,exports){
@@ -148,11 +150,23 @@ function getBlock (point, grid) {
     return column[block];
 }
 
+function getPointFromBlock (blockNumber, grid) {
+    var point = {
+        x: '',
+        y: ''
+    };
+
+    point.x = blockNumber / grid.columns;
+    point.y = blockNumber % grid.columns;
+    return point;
+}
+
 module.exports = {
     randomIntFromInterval: randomIntFromInterval,
     getRandomKeyFromObject: getRandomKeyFromObject,
     getRandomKeyNameFromObject: getRandomKeyNameFromObject,
-    getBlock: getBlock
+    getBlock: getBlock,
+    getPointFromBlock: getPointFromBlock
 }
 
 },{}],4:[function(require,module,exports){

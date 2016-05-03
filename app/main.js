@@ -27,14 +27,22 @@ function getPiece() {
     piece.init(grid, color);
 }
 
-function drawShadow() {
-    for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
-        var block = document.getElementsByClassName('column');
-        console.log(block)
-    }
-}
+// function drawShadow() {
+//     for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
+//         var block = document.getElementsByClassName('column');
+//         for (i = 0; i < block.length; i++) {
+//             if () {
+//             }
+//             block[i].style.backgroundColor = 'green';
+//         }
+//     }
+// }
+//
+// drawShadow();
+var me = helper.getPointFromBlock(10, grid);
+console.log(me);
 
-drawShadow();
+
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
