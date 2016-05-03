@@ -1,6 +1,7 @@
 const
     initTetris = require('../lib/init-tetris'),
     shape = require('../lib/tetris-shapes'),
+    check = require('../lib/check.js'),
     helper = require('../lib/helper');
 
 var grid = {
@@ -20,16 +21,6 @@ var piece = helper.getRandomKeyFromObject(shape);
 
 // Initialize random shape as currentShape
 piece.init(grid, color);
-// console.log(piece.width);
-// console.log(piece.height);
-
-// var pivotPoint = {
-//     x: 0,
-//     y: helper.randomIntFromInterval(0, grid.columns - piece.width)
-// }
-
-// piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
-
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
@@ -41,26 +32,22 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
-        if (checkDown) {
-            piece.eraseShape(pivotPoint, piece.currentShape.value, grid, color);
-            pivotPoint.x += 1;
-            piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
-        } else {
-            console.log('Down impossible');
+        if (check.down(piece)) {
+            piece.moveDown();
         }
     }
 
     // left key
     if (event.keyCode == 37) {
-        piece.eraseShape(pivotPoint, piece.currentShape.value, grid, color);
-        pivotPoint.y += -1;
-        piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
+        if (check.left(piece)) {
+            piece.moveLeft();
+        }
     }
 
     // right key
     if (event.keyCode == 39) {
-        piece.eraseShape(pivotPoint, piece.currentShape.value, grid, color);
-        pivotPoint.y += 1;
-        piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
+        if (check.right(piece)) {
+            piece.moveRight();
+        }
     }
 }

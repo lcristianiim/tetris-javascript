@@ -2,6 +2,7 @@
 const
     initTetris = require('../lib/init-tetris'),
     shape = require('../lib/tetris-shapes'),
+    check = require('../lib/check.js'),
     helper = require('../lib/helper');
 
 var grid = {
@@ -21,16 +22,6 @@ var piece = helper.getRandomKeyFromObject(shape);
 
 // Initialize random shape as currentShape
 piece.init(grid, color);
-// console.log(piece.width);
-// console.log(piece.height);
-
-// var pivotPoint = {
-//     x: 0,
-//     y: helper.randomIntFromInterval(0, grid.columns - piece.width)
-// }
-
-// piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
-
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
@@ -42,31 +33,53 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
-        if (checkDown) {
-            piece.eraseShape(pivotPoint, piece.currentShape.value, grid, color);
-            pivotPoint.x += 1;
-            piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
-        } else {
-            console.log('Down impossible');
+        if (check.down(piece)) {
+            piece.moveDown();
         }
     }
 
     // left key
     if (event.keyCode == 37) {
-        piece.eraseShape(pivotPoint, piece.currentShape.value, grid, color);
-        pivotPoint.y += -1;
-        piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
+        if (check.left(piece)) {
+            piece.moveLeft();
+        }
     }
 
     // right key
     if (event.keyCode == 39) {
-        piece.eraseShape(pivotPoint, piece.currentShape.value, grid, color);
-        pivotPoint.y += 1;
-        piece.drawShape(pivotPoint, piece.currentShape.value, grid, color);
+        if (check.right(piece)) {
+            piece.moveRight();
+        }
     }
 }
 
-},{"../lib/helper":2,"../lib/init-tetris":3,"../lib/tetris-shapes":4}],2:[function(require,module,exports){
+},{"../lib/check.js":2,"../lib/helper":3,"../lib/init-tetris":4,"../lib/tetris-shapes":5}],2:[function(require,module,exports){
+function down (piece) {
+    if (piece.pivot.x != piece.grid.rows - piece.height) {
+        return true;
+    } else console.log('Bottom reached');
+}
+
+function left (piece) {
+    if (piece.pivot.y != 0) {
+        return true;
+    } else console.log('Left reached');
+}
+
+
+function right (piece) {
+    if (piece.pivot.y != piece.grid.columns - piece.width) {
+        return true;
+    } else console.log('Right reached');
+}
+
+module.exports = {
+    down: down,
+    left: left,
+    right: right
+}
+
+},{}],3:[function(require,module,exports){
 /**
  *
  * @public
@@ -112,7 +125,7 @@ module.exports = {
     getRandomKeyNameFromObject: getRandomKeyNameFromObject
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * Creates a tetris grid.
  *
@@ -160,9 +173,8 @@ function init(options, className) {
 
 exports.init = init;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 const helper = require('./helper');
-
 
 function drawPoint(point, grid, color) {
     let column = document.getElementsByClassName('column');
@@ -188,50 +200,72 @@ var piece = {
     pivot: '',
     grid: '',
     color: '',
+    self: this,
     rotate: function () {
         console.log('rotating');
     },
-    init: function (pivot, grid, color) {
+    moveDown: function () {
+        this.eraseShape();
+        this.pivot.x += 1;
+        this.drawShape();
+    },
+    moveLeft: function () {
+        this.eraseShape();
+        this.pivot.y += -1;
+        this.drawShape();
+    },
+    moveRight: function () {
+        this.eraseShape();
+        this.pivot.y += 1;
+        this.drawShape();
+    },
+    init: function (grid, color) {
         this.setShape();
         this.getDimensions();
 
         this.color = color;
         this.grid = grid;
-        this.pivot = pivot;
+        this.pivot = {
+            x: 0,
+            y: helper.randomIntFromInterval(0, grid.columns - this.width)
+        };
+
+        this.drawShape();
     },
     setShape: function () {
         // sets a random currentShape
-        this.currentShape = helper.getRandomKeyFromObject(this.shape);
+        randomS = helper.getRandomKeyNameFromObject(this.shape);
+        this.currentShape = this.shape[randomS];
     },
     getDimensions: function () {
         this.width = this.currentShape.value[0].length;
         this.height = this.currentShape.value.length;
     },
-    drawShape: function (point, shape, grid, color) {
-        for (var i = 0; i < shape.length; i++) {
-            for (var j = 0; j < shape[0].length; j++) {
-                if (shape[i][j]) {
-                    if (shape[i][j] == 1) {
+    drawShape: function () {
+        for (var i = 0; i < this.currentShape.value.length; i++) {
+            for (var j = 0; j < this.currentShape.value[0].length; j++) {
+                if (this.currentShape.value[i][j]) {
+                    if (this.currentShape.value[i][j] == 1) {
                         let newPoint = {
-                            x: point.x + i,
-                            y: point.y + j
+                            x: this.pivot.x + i,
+                            y: this.pivot.y + j
                         };
-                        drawPoint(newPoint, grid, color);
+                        drawPoint(newPoint, this.grid, this.color);
                     }
                 }
             }
         }
     },
-    eraseShape: function (point, shape, grid, color) {
-        for (var i = 0; i < shape.length; i++) {
-            for (var j = 0; j < shape[0].length; j++) {
-                if (shape[i][j]) {
-                    if (shape[i][j] == 1) {
+    eraseShape: function () {
+        for (var i = 0; i < this.currentShape.value.length; i++) {
+            for (var j = 0; j < this.currentShape.value[0].length; j++) {
+                if (this.currentShape.value[i][j]) {
+                    if (this.currentShape.value[i][j] == 1) {
                         let newPoint = {
-                            x: point.x + i,
-                            y: point.y + j
+                            x: this.pivot.x + i,
+                            y: this.pivot.y + j
                         };
-                        erasePoint(newPoint, grid, color);
+                        erasePoint(newPoint, this.grid, this.color);
                     }
                 }
             }
@@ -362,4 +396,4 @@ module.exports = {
     zPiece: zPiece
 }
 
-},{"./helper":2}]},{},[1]);
+},{"./helper":3}]},{},[1]);
