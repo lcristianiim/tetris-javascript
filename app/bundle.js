@@ -9,33 +9,38 @@ var grid = {
     rows: 20,
     columns: 10
 }
-
-
+var piece;
 var colors = ['orange', 'cyan', 'brown', 'yellow', 'magenta', 'lime'];
-var color = colors[Math.floor(Math.random()*colors.length)];
+var color = '';
 
 // Initialize tetris grid
 initTetris.init(grid, 'tetris-container');
 
-// Initialize random piece
-var piece = helper.getRandomKeyFromObject(shape);
+getPiece();
 
-// Initialize random shape as currentShape
-piece.init(grid, color);
+function getPiece() {
+    color = colors[Math.floor(Math.random()*colors.length)];
+
+    // Initialize random piece
+    piece = helper.getRandomKeyFromObject(shape);
+
+    // Initialize random shape as currentShape
+    piece.init(grid, color);
+}
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
     // up key
     if (event.keyCode == 38) {
-        console.log('up');
+        piece.rotate();
     }
 
     // down key
     if (event.keyCode == 40) {
         if (check.down(piece)) {
             piece.moveDown();
-        }
+        } else getPiece();
     }
 
     // left key
@@ -200,9 +205,29 @@ var piece = {
     pivot: '',
     grid: '',
     color: '',
-    self: this,
+    currentShapeName: '',
     rotate: function () {
         console.log('rotating');
+        var found = false;
+        for (var key in this.shape) {
+            if (found == true) {
+                this.eraseShape();
+                this.currentShapeName = key;
+                this.currentShape = this.shape[key];
+                this.getDimensions();
+                this.drawShape();
+                break;
+            }
+            if (key == 'd') {
+                this.eraseShape();
+                this.currentShapeName = 'a';
+                this.currentShape = this.shape['a'];
+                this.getDimensions();
+                this.drawShape();
+                break;
+            }
+            if (key == this.currentShapeName) {found = true}
+        }
     },
     moveDown: function () {
         this.eraseShape();
@@ -233,8 +258,9 @@ var piece = {
         this.drawShape();
     },
     setShape: function () {
-        // sets a random currentShape
+        // sets one random currentShape and currentShapeName
         randomS = helper.getRandomKeyNameFromObject(this.shape);
+        this.currentShapeName = randomS;
         this.currentShape = this.shape[randomS];
     },
     getDimensions: function () {

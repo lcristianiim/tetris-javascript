@@ -8,33 +8,38 @@ var grid = {
     rows: 20,
     columns: 10
 }
-
-
+var piece;
 var colors = ['orange', 'cyan', 'brown', 'yellow', 'magenta', 'lime'];
-var color = colors[Math.floor(Math.random()*colors.length)];
+var color = '';
 
 // Initialize tetris grid
 initTetris.init(grid, 'tetris-container');
 
-// Initialize random piece
-var piece = helper.getRandomKeyFromObject(shape);
+getPiece();
 
-// Initialize random shape as currentShape
-piece.init(grid, color);
+function getPiece() {
+    color = colors[Math.floor(Math.random()*colors.length)];
+
+    // Initialize random piece
+    piece = helper.getRandomKeyFromObject(shape);
+
+    // Initialize random shape as currentShape
+    piece.init(grid, color);
+}
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
     // up key
     if (event.keyCode == 38) {
-        console.log('up');
+        piece.rotate();
     }
 
     // down key
     if (event.keyCode == 40) {
         if (check.down(piece)) {
             piece.moveDown();
-        }
+        } else getPiece();
     }
 
     // left key
