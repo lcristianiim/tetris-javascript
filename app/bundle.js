@@ -28,6 +28,15 @@ function getPiece() {
     piece.init(grid, color);
 }
 
+function drawShadow() {
+    for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
+        var block = document.getElementsByClassName('column');
+        console.log(block)
+    }
+}
+
+drawShadow();
+
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
@@ -40,6 +49,7 @@ document.body.onkeydown = function (event) {
     if (event.keyCode == 40) {
         if (check.down(piece)) {
             piece.moveDown();
+            check.downCollision(piece, grid);
         } else getPiece();
     }
 
@@ -59,6 +69,8 @@ document.body.onkeydown = function (event) {
 }
 
 },{"../lib/check.js":2,"../lib/helper":3,"../lib/init-tetris":4,"../lib/tetris-shapes":5}],2:[function(require,module,exports){
+const helper = require('./helper.js');
+
 function down (piece) {
     if (piece.pivot.x != piece.grid.rows - piece.height) {
         return true;
@@ -78,13 +90,19 @@ function right (piece) {
     } else console.log('Right reached');
 }
 
+function downCollision (piece, grid) {
+    var block = helper.getBlock(piece.pivot, grid);
+    console.log(block);
+}
+
 module.exports = {
     down: down,
     left: left,
-    right: right
+    right: right,
+    downCollision: downCollision
 }
 
-},{}],3:[function(require,module,exports){
+},{"./helper.js":3}],3:[function(require,module,exports){
 /**
  *
  * @public
@@ -124,10 +142,17 @@ function getRandomKeyNameFromObject (object) {
     return key;
 }
 
+function getBlock (point, grid) {
+    let column = document.getElementsByClassName('column');
+    let block = point.x * grid.columns + point.y;
+    return column[block];
+}
+
 module.exports = {
     randomIntFromInterval: randomIntFromInterval,
     getRandomKeyFromObject: getRandomKeyFromObject,
-    getRandomKeyNameFromObject: getRandomKeyNameFromObject
+    getRandomKeyNameFromObject: getRandomKeyNameFromObject,
+    getBlock: getBlock
 }
 
 },{}],4:[function(require,module,exports){
@@ -203,7 +228,12 @@ function next(obj, specificKey) {
     var found = false;
     for (var key in obj) {
         if (found == true) {
-            console.log(key);
+            return key;
+            break;
+        }
+        if (key == 'd') {
+            return 'a';
+            break;
         }
         if (key == specificKey) {found = true}
     }
@@ -216,28 +246,24 @@ var piece = {
     grid: '',
     color: '',
     currentShapeName: '',
+    nextShape: '',
     rotate: function () {
-        console.log('rotating');
+        this.nextShape = next(this.shape, this.currentShapeName);
 
-        var found = false;
-        for (var key in this.shape) {
-            if (found == true) {
-                this.eraseShape();
-                this.currentShapeName = key;
-                this.currentShape = this.shape[key];
-                this.getDimensions();
-                this.drawShape();
-                break;
-            }
-            if (key == 'd') {
-                this.eraseShape();
-                this.currentShapeName = 'a';
-                this.currentShape = this.shape['a'];
-                this.getDimensions();
-                this.drawShape();
-                break;
-            }
-            if (key == this.currentShapeName) {found = true}
+        var preWidth = this.shape[this.nextShape].value[0].length;
+        var preHeight = this.shape[this.nextShape].value.length;
+
+        this.width = preWidth;
+        this.height = preHeight;
+
+        if (this.pivot.y > this.grid.columns - preWidth) {
+            console.log('error');
+        } else {
+            this.eraseShape();
+            this.currentShapeName = this.nextShape;
+            this.currentShape = this.shape[this.currentShapeName];
+
+            this.drawShape();
         }
     },
     moveDown: function () {

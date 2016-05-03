@@ -27,6 +27,15 @@ function getPiece() {
     piece.init(grid, color);
 }
 
+function drawShadow() {
+    for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
+        var block = document.getElementsByClassName('column');
+        console.log(block)
+    }
+}
+
+drawShadow();
+
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
@@ -39,6 +48,7 @@ document.body.onkeydown = function (event) {
     if (event.keyCode == 40) {
         if (check.down(piece)) {
             piece.moveDown();
+            check.downCollision(piece, grid);
         } else getPiece();
     }
 
