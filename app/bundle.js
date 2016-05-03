@@ -199,6 +199,16 @@ function erasePoint(point, grid, color) {
     }
 };
 
+function next(obj, specificKey) {
+    var found = false;
+    for (var key in obj) {
+        if (found == true) {
+            console.log(key);
+        }
+        if (key == specificKey) {found = true}
+    }
+}
+
 var piece = {
     width: '',
     height: '',
@@ -208,6 +218,7 @@ var piece = {
     currentShapeName: '',
     rotate: function () {
         console.log('rotating');
+
         var found = false;
         for (var key in this.shape) {
             if (found == true) {
