@@ -1,0 +1,23 @@
+.tetris-container {
+  width: 400px;
+  height: 800px;
+  background: #3C3E3C;
+  margin: 0 auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+  .tetris-container .row {
+    -webkit-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex; }
+    .tetris-container .row .column {
+      -webkit-flex: 1;
+          -ms-flex: 1;
+              flex: 1;
+      border: 1px solid black; }

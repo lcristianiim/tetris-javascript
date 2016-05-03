@@ -1,0 +1,17 @@
+{
+  "name": "new-tetris",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "gulp": "^3.9.1",
+    "tap": "^5.7.1",
+    "watchify": "^3.7.0"
+  }
+}
