@@ -30,108 +30,44 @@ function getPiece() {
 
 var columnsBlocks = document.getElementsByClassName('column');
 
-function drawShadow() {
-    for (var i = piece.pivot.x * piece.pivot.y; i < piece.grid.rows * piece.grid.columns; i++) {
-        for (var j = piece.pivot.x * piece.pivot.y; j < columnsBlocks.length; j++) {
-
-            if (columnsBlocks[j].getAttribute("used") == "used") {
-                var point = helper.getPointFromBlock(j, grid);
-
-                var point1 = { x: point.x - 1, y: point.y - 1 }
-                var point2 = { x: point.x - 1, y: point.y }
-                var point3 = { x: point.x - 1, y: point.y + 1 }
-
-                var point4 = { x: point.x, y: point.y - 1 }
-                var point5 = { x: point.x, y: point.y }
-                var point6 = { x: point.x, y: point.y + 1 }
-
-                var point7 = { x: point.x + 1, y: point.y - 1 }
-                var point8 = { x: point.x + 1, y: point.y}
-                var point9 = { x: point.x + 1, y: point.y + 1}
-
-                var shadowPoints = [point1, point2, point3, point4, point5, point6, point7, point8, point9]
-                shadowPoints.forEach(function (item) {
-                    var shadowBlock = helper.getBlock(item, grid);
-                    if (shadowBlock) {
-                        shadowBlock.style.backgroundColor = "black";
-                    }
-                });
-            }
-        }
-    }
-}
-
-
-function clearShadow() {
-    for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
-        for (var j = 0; j < columnsBlocks.length; j++) {
-            if (columnsBlocks[j].getAttribute("used") == "used") {
-                var point = helper.getPointFromBlock(j, grid);
-
-                var point1 = { x: point.x - 1, y: point.y - 1 }
-                var point2 = { x: point.x - 1, y: point.y }
-                var point3 = { x: point.x - 1, y: point.y + 1 }
-
-                var point4 = { x: point.x, y: point.y - 1 }
-                var point5 = { x: point.x, y: point.y }
-                var point6 = { x: point.x, y: point.y + 1 }
-
-                var point7 = { x: point.x + 1, y: point.y - 1 }
-                var point8 = { x: point.x + 1, y: point.y}
-                var point9 = { x: point.x + 1, y: point.y + 1}
-
-                var shadowPoints = [point1, point2, point3, point4, point5, point6, point7, point8, point9]
-                shadowPoints.forEach(function (item) {
-                    var shadowBlock = helper.getBlock(item, grid);
-                    if (shadowBlock) {
-                    shadowBlock.style.backgroundColor = "#3C3E3C";
-                    }
-                });
-            }
-        }
-    }
-}
-
+// var point1 = { x: point.x - 1, y: point.y - 1 }
+// var point2 = { x: point.x - 1, y: point.y }
+// var point3 = { x: point.x - 1, y: point.y + 1 }
+//
+// var point4 = { x: point.x, y: point.y - 1 }
+// var point5 = { x: point.x, y: point.y }
+// var point6 = { x: point.x, y: point.y + 1 }
+//
+// var point7 = { x: point.x + 1, y: point.y - 1 }
+// var point8 = { x: point.x + 1, y: point.y}
+// var point9 = { x: point.x + 1, y: point.y + 1}
+//
+// var shadowPoints = [point1, point2, point3, point4, point5, point6, point7, point8, point9]
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
     // up key
     if (event.keyCode == 38) {
-        clearShadow();
         piece.rotate();
-        drawShadow();
         piece.drawShape();
     }
 
     // down key
     if (event.keyCode == 40) {
-        if (check.down(piece)) {
-            clearShadow();
             piece.moveDown();
-            drawShadow();
             piece.drawShape();
-            // check.downCollision(piece, grid);
-        } else getPiece();
     }
 
     // left key
     if (event.keyCode == 37) {
-        if (check.left(piece)) {
-            clearShadow();
             piece.moveLeft();
-            drawShadow();
             piece.drawShape();
-        }
     }
 
     // right key
     if (event.keyCode == 39) {
-        if (check.right(piece)) {
-            clearShadow();
             piece.moveRight();
-            drawShadow();
             piece.drawShape();
-        }
     }
 }
