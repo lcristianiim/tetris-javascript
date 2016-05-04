@@ -138,11 +138,25 @@ function right (piece) {
     }
 }
 
+function rotate (piece) {
+    var columnBlocks = document.getElementsByClassName('column');
+
+    for (var i = 0; i < columnBlocks.length; i++) {
+        if (columnBlocks[i].getAttribute("active") == "true") {
+
+            var pointer = helper.getPointFromBlock(i, piece.grid);
+            console.log(pointer);
+
+        }
+    }
+}
+
 
 module.exports = {
     down: down,
     left: left,
-    right: right
+    right: right,
+    rotate: rotate
 }
 
 },{"./helper.js":3}],3:[function(require,module,exports){
@@ -307,11 +321,17 @@ var piece = {
         this.nextShape = next(this.shape, this.currentShapeName);
         this.currentShapeName = this.nextShape;
 
+        this.getDimensions();
+        var preWidth = this.shape[this.nextShape].value[0].length - 2;
+        var preHeight = this.shape[this.nextShape].value.length - 2;
 
+        if (this.pivot.y + 1 > this.grid.columns - preWidth) {
+            console.log('Cannot rotate');
+        } else {
             this.eraseShape();
             this.currentShape = this.shape[this.currentShapeName];
-
             this.drawShape();
+        }
     },
     moveDown: function () {
         this.eraseShape();
@@ -348,8 +368,8 @@ var piece = {
         this.currentShape = this.shape[randomS];
     },
     getDimensions: function () {
-        this.width = this.currentShape.value[0].length - 1;
-        this.height = this.currentShape.value.length - 1;
+        this.width = this.currentShape.value[0].length;
+        this.height = this.currentShape.value.length;
     },
     drawShape: function () {
         for (var i = 0; i < this.currentShape.value.length; i++) {
