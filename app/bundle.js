@@ -322,6 +322,7 @@ var piece = {
                             y: this.pivot.y + j
                         };
                         drawPoint(newPoint, this.grid, 'black');
+                        helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'shadow');
                     }
                 }
             }
@@ -337,6 +338,7 @@ var piece = {
                             y: this.pivot.y + j
                         };
                         erasePoint(newPoint, this.grid, this.color);
+                        helper.getBlock(newPoint, this.grid).removeAttribute('shadow');
                     }
                 }
             }
