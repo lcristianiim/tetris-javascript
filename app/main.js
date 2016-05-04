@@ -67,8 +67,12 @@ document.body.onkeydown = function (event) {
 
     // left key
     if (event.keyCode == 37) {
+        if (!check.left(piece)) {
             piece.moveLeft();
             piece.drawShape();
+        } else {
+            console.log('Margin left reached');
+        }
     }
 
     // right key

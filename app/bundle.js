@@ -68,8 +68,12 @@ document.body.onkeydown = function (event) {
 
     // left key
     if (event.keyCode == 37) {
+        if (!check.left(piece)) {
             piece.moveLeft();
             piece.drawShape();
+        } else {
+            console.log('Margin left reached');
+        }
     }
 
     // right key
@@ -105,9 +109,16 @@ function down (piece) {
 }
 
 function left (piece) {
-    if (piece.pivot.y != 0) {
-        return true;
-    } else console.log('Left reached');
+    var columnBlocks = document.getElementsByClassName('column');
+    for (var i = 0; i < columnBlocks.length; i++) {
+        if (columnBlocks[i].getAttribute("active") == "true") {
+            var pointer = helper.getPointFromBlock(i, piece.grid);
+            if (pointer.y == 0) {
+                return true;
+                break;
+            }
+        }
+    }
 }
 
 function right (piece) {
