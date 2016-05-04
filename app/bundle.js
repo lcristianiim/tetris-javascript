@@ -85,17 +85,15 @@ const helper = require('./helper.js');
 function down (piece) {
     var columnBlocks = document.getElementsByClassName('column');
     for (var i = 0; i < columnBlocks.length; i++) {
-        if (columnBlocks[i].getAttribute("shadow") == "moving") {
+        if (columnBlocks[i].getAttribute("active") == "true") {
             var pointer = helper.getPointFromBlock(i, piece.grid);
             if (pointer.x == piece.grid.rows - 1) {
 
-                // when shadow reaches bottom move piece one step more
-                piece.moveDown();
                 console.log('bottom reached');
 
                 for (var j = 0; j < columnBlocks.length; j++) {
-                    if (columnBlocks[j].getAttribute("shadow") == "moving") {
-                        columnBlocks[j].setAttribute("shadow", "stopped");
+                    if (columnBlocks[j].getAttribute("active") == "true") {
+                        columnBlocks[j].removeAttribute("active");
                     }
                 }
 
@@ -341,6 +339,9 @@ var piece = {
                             y: this.pivot.y + j
                         };
                         drawPoint(newPoint, this.grid, this.color);
+                        if (helper.getBlock(newPoint, this.grid)) {
+                            helper.getBlock(newPoint, this.grid).setAttribute('active', 'true');
+                        }
                     }
 
                     if (this.currentShape.value[i][j] == 2) {
@@ -369,6 +370,7 @@ var piece = {
                         erasePoint(newPoint, this.grid, this.color);
                         if (helper.getBlock(newPoint, this.grid)) {
                             helper.getBlock(newPoint, this.grid).removeAttribute('shadow');
+                            helper.getBlock(newPoint, this.grid).removeAttribute('active');
                         }
                     }
                 }
