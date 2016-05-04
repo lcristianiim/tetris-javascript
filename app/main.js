@@ -28,30 +28,34 @@ function getPiece() {
     piece.init(grid, color);
 }
 
+var columnsBlocks = document.getElementsByClassName('column');
+
 function drawShadow() {
-    for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
-        var block = document.getElementsByClassName('column');
-        for (i = 0; i < block.length; i++) {
-            if (block[i].getAttribute("used") == "used") {
-                var point = helper.getPointFromBlock(i, grid);
-                if (point.x - 1 >= 0) {
-                    for (var k = point.x - 1; k <= point.x + 1; k++ ) {
-                        if (point.y - 1 >= 0) {
-                            for (var t = point.y - 1; t <= point.y + 1; t++) {
-                                if (block[i].getAttribute("used") == "used" && t <= 10) {
-                                    var pointer = {
-                                        x: k,
-                                        y: t
-                                    }
-                                    var blocker = helper.getBlock(pointer, grid);
-                                    if (blocker) {
-                                        blocker.style.backgroundColor = 'black';
-                                    }
-                                }
-                            }
-                        }
+    for (var i = piece.pivot.x * piece.pivot.y; i < piece.grid.rows * piece.grid.columns; i++) {
+        for (var j = piece.pivot.x * piece.pivot.y; j < columnsBlocks.length; j++) {
+
+            if (columnsBlocks[j].getAttribute("used") == "used") {
+                var point = helper.getPointFromBlock(j, grid);
+
+                var point1 = { x: point.x - 1, y: point.y - 1 }
+                var point2 = { x: point.x - 1, y: point.y }
+                var point3 = { x: point.x - 1, y: point.y + 1 }
+
+                var point4 = { x: point.x, y: point.y - 1 }
+                var point5 = { x: point.x, y: point.y }
+                var point6 = { x: point.x, y: point.y + 1 }
+
+                var point7 = { x: point.x + 1, y: point.y - 1 }
+                var point8 = { x: point.x + 1, y: point.y}
+                var point9 = { x: point.x + 1, y: point.y + 1}
+
+                var shadowPoints = [point1, point2, point3, point4, point5, point6, point7, point8, point9]
+                shadowPoints.forEach(function (item) {
+                    var shadowBlock = helper.getBlock(item, grid);
+                    if (shadowBlock) {
+                        shadowBlock.style.backgroundColor = "black";
                     }
-                }
+                });
             }
         }
     }
@@ -60,28 +64,29 @@ function drawShadow() {
 
 function clearShadow() {
     for (var i = 0; i < piece.grid.rows * piece.grid.columns; i++) {
-        var block = document.getElementsByClassName('column');
-        for (i = 0; i < block.length; i++) {
-            if (block[i].getAttribute("used") == "used") {
-                var point = helper.getPointFromBlock(i, grid);
-                if (point.x - 1 >= 0) {
-                    for (var k = point.x - 1; k <= point.x + 1; k++ ) {
-                        if (point.y - 1 >= 0) {
-                            for (var t = point.y - 1; t <= point.y + 1; t++) {
-                                if (block[i].getAttribute("used") == "used" && t <= 10) {
-                                    var pointer = {
-                                        x: k,
-                                        y: t
-                                    }
-                                    var blocker = helper.getBlock(pointer, grid);
-                                    if (blocker) {
-                                        blocker.style.backgroundColor = '#3C3E3C';
-                                    }
-                                }
-                            }
-                        }
+        for (var j = 0; j < columnsBlocks.length; j++) {
+            if (columnsBlocks[j].getAttribute("used") == "used") {
+                var point = helper.getPointFromBlock(j, grid);
+
+                var point1 = { x: point.x - 1, y: point.y - 1 }
+                var point2 = { x: point.x - 1, y: point.y }
+                var point3 = { x: point.x - 1, y: point.y + 1 }
+
+                var point4 = { x: point.x, y: point.y - 1 }
+                var point5 = { x: point.x, y: point.y }
+                var point6 = { x: point.x, y: point.y + 1 }
+
+                var point7 = { x: point.x + 1, y: point.y - 1 }
+                var point8 = { x: point.x + 1, y: point.y}
+                var point9 = { x: point.x + 1, y: point.y + 1}
+
+                var shadowPoints = [point1, point2, point3, point4, point5, point6, point7, point8, point9]
+                shadowPoints.forEach(function (item) {
+                    var shadowBlock = helper.getBlock(item, grid);
+                    if (shadowBlock) {
+                    shadowBlock.style.backgroundColor = "#3C3E3C";
                     }
-                }
+                });
             }
         }
     }
