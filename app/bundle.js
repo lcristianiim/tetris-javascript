@@ -29,7 +29,6 @@ function getPiece() {
     piece.init(grid, color);
 }
 
-var columnsBlocks = document.getElementsByClassName('column');
 
 // var point1 = { x: point.x - 1, y: point.y - 1 }
 // var point2 = { x: point.x - 1, y: point.y }
@@ -56,8 +55,15 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
+        if (!check.down(piece)) {
+
             piece.moveDown();
             piece.drawShape();
+
+        } else {
+            getPiece()
+        }
+
     }
 
     // left key
@@ -77,6 +83,24 @@ document.body.onkeydown = function (event) {
 const helper = require('./helper.js');
 
 function down (piece) {
+    var columnBlocks = document.getElementsByClassName('column');
+    for (var i = 0; i < columnBlocks.length; i++) {
+        if (columnBlocks[i].getAttribute("shadow") == "moving") {
+            var pointer = helper.getPointFromBlock(i, piece.grid);
+            if (pointer.x == piece.grid.rows - 1) {
+                for (var j = 0; j < columnBlocks.length; j++) {
+                    if (columnBlocks[j].getAttribute("shadow") == "moving") {
+                        columnBlocks[j].setAttribute("shadow", "stopped");
+                    }
+                }
+                pointer.x = 0;
+                piece.moveDown();
+                console.log('bottom reached');
+                return true;
+                break;
+            }
+        }
+    }
 }
 
 function left (piece) {
@@ -85,12 +109,12 @@ function left (piece) {
     } else console.log('Left reached');
 }
 
-
 function right (piece) {
     if (piece.pivot.y != piece.grid.columns - piece.width) {
         return true;
     } else console.log('Right reached');
 }
+
 
 module.exports = {
     down: down,
@@ -322,7 +346,9 @@ var piece = {
                             y: this.pivot.y + j
                         };
                         drawPoint(newPoint, this.grid, 'black');
-                        helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'shadow');
+                        if (helper.getBlock(newPoint, this.grid)) {
+                            helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'moving');
+                        }
                     }
                 }
             }
@@ -338,7 +364,9 @@ var piece = {
                             y: this.pivot.y + j
                         };
                         erasePoint(newPoint, this.grid, this.color);
-                        helper.getBlock(newPoint, this.grid).removeAttribute('shadow');
+                        if (helper.getBlock(newPoint, this.grid)) {
+                            helper.getBlock(newPoint, this.grid).removeAttribute('shadow');
+                        }
                     }
                 }
             }

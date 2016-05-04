@@ -28,7 +28,6 @@ function getPiece() {
     piece.init(grid, color);
 }
 
-var columnsBlocks = document.getElementsByClassName('column');
 
 // var point1 = { x: point.x - 1, y: point.y - 1 }
 // var point2 = { x: point.x - 1, y: point.y }
@@ -55,8 +54,15 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
+        if (!check.down(piece)) {
+
             piece.moveDown();
             piece.drawShape();
+
+        } else {
+            getPiece()
+        }
+
     }
 
     // left key
