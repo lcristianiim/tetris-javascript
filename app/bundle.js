@@ -78,8 +78,12 @@ document.body.onkeydown = function (event) {
 
     // right key
     if (event.keyCode == 39) {
+        if (!check.right(piece)) {
             piece.moveRight();
             piece.drawShape();
+        } else {
+            console.log('Margin right reached');
+        }
     }
 }
 
@@ -122,9 +126,16 @@ function left (piece) {
 }
 
 function right (piece) {
-    if (piece.pivot.y != piece.grid.columns - piece.width) {
-        return true;
-    } else console.log('Right reached');
+    var columnBlocks = document.getElementsByClassName('column');
+    for (var i = 0; i < columnBlocks.length; i++) {
+        if (columnBlocks[i].getAttribute("active") == "true") {
+            var pointer = helper.getPointFromBlock(i, piece.grid);
+            if (pointer.y == piece.grid.columns - 1) {
+                return true;
+                break;
+            }
+        }
+    }
 }
 
 

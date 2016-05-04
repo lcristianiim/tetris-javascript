@@ -77,7 +77,11 @@ document.body.onkeydown = function (event) {
 
     // right key
     if (event.keyCode == 39) {
+        if (!check.right(piece)) {
             piece.moveRight();
             piece.drawShape();
+        } else {
+            console.log('Margin right reached');
+        }
     }
 }
