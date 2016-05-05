@@ -79,6 +79,7 @@ document.body.onkeydown = function (event) {
         if (!check.right(piece)) {
             piece.moveRight();
             piece.drawShape();
+            clearExtraBlocks();
         } else {
             console.log('Margin right reached');
         }
@@ -130,7 +131,6 @@ function left (piece) {
                 let block = helper.getBlock(point, piece.grid);
                 if (block) {
                     block.setAttribute('extra', 'extra');
-                    block.style.background = '#3C3E3C';
                     block.removeAttribute('used');
                     block.removeAttribute('shadow');
                 }
@@ -147,6 +147,21 @@ function right (piece) {
             if (pointer.y == piece.grid.columns - 1) {
                 return true;
                 break;
+            }
+        }
+        if (columnBlocks[i].getAttribute("shadow") == "moving") {
+            var pointer = helper.getPointFromBlock(i, piece.grid);
+            if (pointer.y == 9) {
+                let point = {
+                    x: pointer.x + 1,
+                    y: 0
+                }
+                let block = helper.getBlock(point, piece.grid);
+                if (block) {
+                    block.setAttribute('extra', 'extra');
+                    block.removeAttribute('used');
+                    block.removeAttribute('shadow');
+                }
             }
         }
     }

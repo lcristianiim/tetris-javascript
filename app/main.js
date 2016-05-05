@@ -78,6 +78,7 @@ document.body.onkeydown = function (event) {
         if (!check.right(piece)) {
             piece.moveRight();
             piece.drawShape();
+            clearExtraBlocks();
         } else {
             console.log('Margin right reached');
         }
