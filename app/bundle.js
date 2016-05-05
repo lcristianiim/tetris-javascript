@@ -341,8 +341,10 @@ function erasePoint(point, grid, color) {
     let column = document.getElementsByClassName('column');
     let block = point.x * grid.columns + point.y;
     if (column[block]) {
-        column[block].removeAttribute('style');
-        column[block].removeAttribute('used');
+        if (!column[block].hasAttribute('shadow')) {
+            column[block].removeAttribute('style');
+            column[block].removeAttribute('used');
+        }
     }
 };
 
@@ -445,8 +447,8 @@ var piece = {
                             y: this.pivot.y + j
                         };
 
-                        // This is only as a helper
-                        drawPoint(newPoint, this.grid, 'black');
+                        // This is only as a helper to visualize shadows
+                        // drawPoint(newPoint, this.grid, 'black');
 
                         if (helper.getBlock(newPoint, this.grid)) {
                             helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'moving');
@@ -465,7 +467,9 @@ var piece = {
                             x: this.pivot.x + i,
                             y: this.pivot.y + j
                         };
+
                         erasePoint(newPoint, this.grid, this.color);
+
                         if (helper.getBlock(newPoint, this.grid)) {
                             helper.getBlock(newPoint, this.grid).removeAttribute('shadow');
                             helper.getBlock(newPoint, this.grid).removeAttribute('active');
