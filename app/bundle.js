@@ -39,6 +39,28 @@ function clearExtraBlocks () {
     }
 }
 
+function checkCollision () {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i].hasAttribute('used') && blocks[i].hasAttribute('shadow')) {
+
+            for (let j = 0; j < blocks.length; j++) {
+                if (blocks[j].hasAttribute('active')) {
+                    blocks[j].removeAttribute('active');
+                    blocks[j].setAttribute('used', 'used');
+                }
+            }
+
+            // clean the collided blocks
+            blocks[i].removeAttribute('shadow');
+
+            return true;
+            break;
+        }
+    }
+}
+
+
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
@@ -51,15 +73,19 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
-        if (!check.down(piece)) {
-
-            piece.moveDown();
-            piece.drawShape();
-
+        if (checkCollision()) {
+            console.log('Collision detected');
+            getPiece();
         } else {
-            getPiece()
-        }
+            if (!check.down(piece)) {
 
+                piece.moveDown();
+                piece.drawShape();
+
+            } else {
+                getPiece();
+            }
+        }
     }
 
     // left key
@@ -73,6 +99,7 @@ document.body.onkeydown = function (event) {
             console.log('Margin left reached');
         }
     }
+
 
     // right key
     if (event.keyCode == 39) {
@@ -89,6 +116,16 @@ document.body.onkeydown = function (event) {
 },{"../lib/check.js":2,"../lib/helper":3,"../lib/init-tetris":4,"../lib/tetris-shapes":5}],2:[function(require,module,exports){
 const helper = require('./helper.js');
 
+function makeUsed() {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i].hasAttribute('active')) {
+            blocks[i].removeAttribute('active');
+            blocks[i].setAttribute('used', 'true');
+        }
+    }
+}
+
 function down (piece) {
     var columnBlocks = document.getElementsByClassName('column');
     for (var i = 0; i < columnBlocks.length; i++) {
@@ -96,6 +133,7 @@ function down (piece) {
             var pointer = helper.getPointFromBlock(i, piece.grid);
             if (pointer.x == piece.grid.rows - 1) {
 
+                makeUsed();
                 console.log('bottom reached');
 
                 for (var j = 0; j < columnBlocks.length; j++) {
@@ -121,7 +159,7 @@ function left (piece) {
                 break;
             }
         }
-        if (columnBlocks[i].getAttribute("shadow") == "moving") {
+        if (columnBlocks[i].getAttribute("shadow") == "true") {
             var pointer = helper.getPointFromBlock(i, piece.grid);
             if (pointer.y == 0) {
                 let point = {
@@ -149,7 +187,7 @@ function right (piece) {
                 break;
             }
         }
-        if (columnBlocks[i].getAttribute("shadow") == "moving") {
+        if (columnBlocks[i].getAttribute("shadow") == "true") {
             var pointer = helper.getPointFromBlock(i, piece.grid);
             if (pointer.y == 9) {
                 let point = {
@@ -179,7 +217,7 @@ function rotate (piece) {
                         y: piece.grid.columns - 1
                     }
                     let block = helper.getBlock(newPoint, piece.grid);
-                    if (block.getAttribute("shadow") == "moving") {
+                    if (block.getAttribute("shadow") == "true") {
                         block.removeAttribute('used');
                         block.removeAttribute('shadow');
                     }
@@ -193,7 +231,7 @@ function rotate (piece) {
                         y: 0
                     }
                     let block = helper.getBlock(newPoint, piece.grid);
-                    if (block.getAttribute("shadow") == "moving") {
+                    if (block.getAttribute("shadow") == "true") {
                         block.removeAttribute('used');
                         block.removeAttribute('shadow');
                     }
@@ -332,7 +370,6 @@ function drawPoint(point, grid, color) {
     let block = point.x * grid.columns + point.y;
     if (column[block]) {
         column[block].setAttribute('style', 'background: ' + color);
-        column[block].setAttribute('used', 'used');
     }
 };
 
@@ -450,7 +487,7 @@ var piece = {
                         // drawPoint(newPoint, this.grid, 'black');
 
                         if (helper.getBlock(newPoint, this.grid)) {
-                            helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'moving');
+                            helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'true');
                         }
                     }
                 }

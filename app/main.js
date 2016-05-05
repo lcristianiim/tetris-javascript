@@ -38,6 +38,28 @@ function clearExtraBlocks () {
     }
 }
 
+function checkCollision () {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i].hasAttribute('used') && blocks[i].hasAttribute('shadow')) {
+
+            for (let j = 0; j < blocks.length; j++) {
+                if (blocks[j].hasAttribute('active')) {
+                    blocks[j].removeAttribute('active');
+                    blocks[j].setAttribute('used', 'used');
+                }
+            }
+
+            // clean the collided blocks
+            blocks[i].removeAttribute('shadow');
+
+            return true;
+            break;
+        }
+    }
+}
+
+
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
@@ -50,15 +72,19 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
-        if (!check.down(piece)) {
-
-            piece.moveDown();
-            piece.drawShape();
-
+        if (checkCollision()) {
+            console.log('Collision detected');
+            getPiece();
         } else {
-            getPiece()
-        }
+            if (!check.down(piece)) {
 
+                piece.moveDown();
+                piece.drawShape();
+
+            } else {
+                getPiece();
+            }
+        }
     }
 
     // left key
@@ -72,6 +98,7 @@ document.body.onkeydown = function (event) {
             console.log('Margin left reached');
         }
     }
+
 
     // right key
     if (event.keyCode == 39) {
