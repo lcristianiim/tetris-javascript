@@ -59,6 +59,49 @@ function checkCollision () {
     }
 }
 
+function visualizeUsed() {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks && blocks[i].hasAttribute('used')) {
+            blocks[i].style.background = 'grey';
+        }
+    }
+}
+
+function checkDown () {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i].hasAttribute('active')) {
+
+            let point = helper.getPointFromBlock(i, grid);
+            let newPoint = {
+                x: point.x + 1,
+                y: point.y
+            }
+            let block = helper.getBlock(newPoint, grid);
+
+
+
+            if (block && block.hasAttribute('used')) {
+                cleanUp();
+                console.log('everika');
+                return true;
+            }
+        }
+    }
+}
+
+function cleanUp () {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i] && !blocks[i].hasAttribute('style')) {
+            blocks[i].removeAttribute('shadow');
+            blocks[i].removeAttribute('extra');
+            blocks[i].removeAttribute('active');
+        }
+    }
+}
+
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
@@ -72,8 +115,10 @@ document.body.onkeydown = function (event) {
 
     // down key
     if (event.keyCode == 40) {
-        if (checkCollision()) {
+        visualizeUsed();
+        if (checkDown()) {
             console.log('Collision detected');
+            cleanUp();
             getPiece();
         } else {
             if (!check.down(piece)) {
