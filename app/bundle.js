@@ -17,7 +17,6 @@ var color = '';
 initTetris.init(grid, 'tetris-container');
 
 getPiece();
-console.log(piece.name);
 
 function getPiece() {
     color = colors[Math.floor(Math.random()*colors.length)];
@@ -33,7 +32,6 @@ function clearExtraBlocks () {
     let blocks = document.getElementsByClassName('column');
     for (let i = 0; i < blocks.length; i++) {
         if (blocks[i].hasAttribute('extra')) {
-        console.log(blocks[i]);
             blocks[i].removeAttribute('extra');
             blocks[i].removeAttribute('used');
             blocks[i].removeAttribute('shadow');
@@ -70,6 +68,7 @@ document.body.onkeydown = function (event) {
             piece.moveLeft();
             piece.drawShape();
             clearExtraBlocks();
+
         } else {
             console.log('Margin left reached');
         }
