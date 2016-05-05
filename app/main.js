@@ -47,6 +47,7 @@ document.body.onkeydown = function (event) {
     if (event.keyCode == 38) {
         piece.rotate();
         piece.drawShape();
+        check.rotate(piece);
     }
 
     // down key

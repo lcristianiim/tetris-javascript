@@ -48,6 +48,7 @@ document.body.onkeydown = function (event) {
     if (event.keyCode == 38) {
         piece.rotate();
         piece.drawShape();
+        check.rotate(piece);
     }
 
     // down key
@@ -169,13 +170,36 @@ function right (piece) {
 
 function rotate (piece) {
     var columnBlocks = document.getElementsByClassName('column');
-
     for (var i = 0; i < columnBlocks.length; i++) {
         if (columnBlocks[i].getAttribute("active") == "true") {
-
             var pointer = helper.getPointFromBlock(i, piece.grid);
-            console.log(pointer);
+            if (pointer.y == 0) {
+                for (let j = 0; j < piece.grid.rows; j++) {
+                    newPoint = {
+                        x: j,
+                        y: piece.grid.columns - 1
+                    }
+                    let block = helper.getBlock(newPoint, piece.grid);
+                    if (block.getAttribute("shadow") == "moving") {
+                        block.removeAttribute('used');
+                        block.removeAttribute('shadow');
+                    }
+                }
+            }
 
+            if (pointer.y == 9) {
+                for (let j = 0; j < piece.grid.rows; j++) {
+                    newPoint = {
+                        x: j,
+                        y: 0
+                    }
+                    let block = helper.getBlock(newPoint, piece.grid);
+                    if (block.getAttribute("shadow") == "moving") {
+                        block.removeAttribute('used');
+                        block.removeAttribute('shadow');
+                    }
+                }
+            }
         }
     }
 }
