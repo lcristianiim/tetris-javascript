@@ -29,20 +29,17 @@ function getPiece() {
     piece.init(grid, color);
 }
 
-
-// var point1 = { x: point.x - 1, y: point.y - 1 }
-// var point2 = { x: point.x - 1, y: point.y }
-// var point3 = { x: point.x - 1, y: point.y + 1 }
-//
-// var point4 = { x: point.x, y: point.y - 1 }
-// var point5 = { x: point.x, y: point.y }
-// var point6 = { x: point.x, y: point.y + 1 }
-//
-// var point7 = { x: point.x + 1, y: point.y - 1 }
-// var point8 = { x: point.x + 1, y: point.y}
-// var point9 = { x: point.x + 1, y: point.y + 1}
-//
-// var shadowPoints = [point1, point2, point3, point4, point5, point6, point7, point8, point9]
+function clearExtraBlocks () {
+    let blocks = document.getElementsByClassName('column');
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i].hasAttribute('extra')) {
+        console.log(blocks[i]);
+            blocks[i].removeAttribute('extra');
+            blocks[i].removeAttribute('used');
+            blocks[i].removeAttribute('shadow');
+        }
+    }
+}
 
 // Handling the keydown event
 document.body.onkeydown = function (event) {
@@ -71,6 +68,7 @@ document.body.onkeydown = function (event) {
         if (!check.left(piece)) {
             piece.moveLeft();
             piece.drawShape();
+            clearExtraBlocks();
         } else {
             console.log('Margin left reached');
         }
@@ -130,10 +128,12 @@ function left (piece) {
                     y: pointer.y - 1
                 }
                 let block = helper.getBlock(point, piece.grid);
-                console.log(block);
-                block.style.background = '#3C3E3C';
-                block.removeAttribute('used');
-                block.removeAttribute('shadow');
+                if (block) {
+                    block.setAttribute('extra', 'extra');
+                    block.style.background = '#3C3E3C';
+                    block.removeAttribute('used');
+                    block.removeAttribute('shadow');
+                }
             }
         }
     }
@@ -405,7 +405,10 @@ var piece = {
                             x: this.pivot.x + i,
                             y: this.pivot.y + j
                         };
+
+                        // This is only as a helper
                         drawPoint(newPoint, this.grid, 'black');
+
                         if (helper.getBlock(newPoint, this.grid)) {
                             helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'moving');
                         }
