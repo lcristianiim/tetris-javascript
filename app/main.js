@@ -68,6 +68,7 @@ function visualizeUsed() {
     }
 }
 
+// Checks if the active piece collides down with a 'used' piece
 function checkDown () {
     let blocks = document.getElementsByClassName('column');
     for (let i = 0; i < blocks.length; i++) {
@@ -80,17 +81,15 @@ function checkDown () {
             }
             let block = helper.getBlock(newPoint, grid);
 
-
-
             if (block && block.hasAttribute('used')) {
-                cleanUp();
-                console.log('everika');
+                console.log('Piece colision with other piece');
                 return true;
             }
         }
     }
 }
 
+// Removes the shadow, extra, active states
 function cleanUp () {
     let blocks = document.getElementsByClassName('column');
     for (let i = 0; i < blocks.length; i++) {
@@ -118,7 +117,6 @@ document.body.onkeydown = function (event) {
         visualizeUsed();
         if (checkDown()) {
             console.log('Collision detected');
-            cleanUp();
             getPiece();
         } else {
             if (!check.down(piece)) {

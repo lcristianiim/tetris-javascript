@@ -66,6 +66,10 @@ function visualizeUsed() {
         if (blocks && blocks[i].hasAttribute('used')) {
             blocks[i].style.background = 'grey';
         }
+
+        if (blocks && blocks[i].hasAttribute('shadow')) {
+            blocks[i].style.background = 'orange';
+        }
     }
 }
 
@@ -85,7 +89,6 @@ function checkDown () {
 
             if (block && block.hasAttribute('used')) {
                 cleanUp();
-                console.log('everika');
                 return true;
             }
         }
@@ -117,10 +120,11 @@ document.body.onkeydown = function (event) {
     // down key
     if (event.keyCode == 40) {
         visualizeUsed();
+
         if (checkDown()) {
             console.log('Collision detected');
-            cleanUp();
             getPiece();
+            cleanUp();
         } else {
             if (!check.down(piece)) {
 
