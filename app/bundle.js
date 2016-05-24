@@ -136,9 +136,14 @@ document.body.onkeydown = function (event) {
     // left key
     if (event.keyCode == 37) {
         if (!check.left(piece)) {
-            piece.moveLeft();
-            piece.drawShape();
-            clearExtraBlocks();
+
+            if (check.isLeftCollision(piece)) {
+                console.log('Left collision with another piece');
+            } else {
+                piece.moveLeft();
+                piece.drawShape();
+                clearExtraBlocks();
+            }
 
         } else {
             console.log('Margin left reached');
@@ -149,9 +154,14 @@ document.body.onkeydown = function (event) {
     // right key
     if (event.keyCode == 39) {
         if (!check.right(piece)) {
-            piece.moveRight();
-            piece.drawShape();
-            clearExtraBlocks();
+
+            if (check.isRightCollision(piece)) {
+                console.log('Right collision with another piece');
+            } else {
+                piece.moveRight();
+                piece.drawShape();
+                clearExtraBlocks();
+            }
         } else {
             console.log('Margin right reached');
         }
@@ -182,7 +192,6 @@ function down (piece) {
         if (columnBlocks[i].getAttribute("active") == "true") {
             var pointer = helper.getPointFromBlock(i, piece.grid);
             if (pointer.x == piece.grid.rows - 1) {
-
                 return true;
                 break;
             }
@@ -201,24 +210,29 @@ function left (piece) {
                 break;
             }
         }
-        if (columnBlocks[i].getAttribute("shadow") == "true") {
+    }
+}
+
+// Returns true if left collision with another piece occures
+function isLeftCollision(piece) {
+    var columnBlocks = document.getElementsByClassName('column');
+    for (var i = 0; i < columnBlocks.length; i++) {
+        if (columnBlocks[i].getAttribute("active") == "true") {
             var pointer = helper.getPointFromBlock(i, piece.grid);
-            if (pointer.y == 0) {
-                let point = {
-                    x: pointer.x,
-                    y: pointer.y - 1
-                }
-                let block = helper.getBlock(point, piece.grid);
-                if (block) {
-                    block.setAttribute('extra', 'extra');
-                    block.removeAttribute('used');
-                    block.removeAttribute('shadow');
-                }
+            let point = {
+                x: pointer.x,
+                y: pointer.y - 1
+            }
+            let newBlock = helper.getBlock(point, piece.grid);
+            if (newBlock.hasAttribute('used')) {
+                return true;
+                break;
             }
         }
     }
 }
 
+// Returns true if margin right reached
 function right (piece) {
     var columnBlocks = document.getElementsByClassName('column');
     for (var i = 0; i < columnBlocks.length; i++) {
@@ -229,19 +243,23 @@ function right (piece) {
                 break;
             }
         }
-        if (columnBlocks[i].getAttribute("shadow") == "true") {
+    }
+}
+
+// Returns true if left collision with another piece occures
+function isRightCollision(piece) {
+    var columnBlocks = document.getElementsByClassName('column');
+    for (var i = 0; i < columnBlocks.length; i++) {
+        if (columnBlocks[i].getAttribute("active") == "true") {
             var pointer = helper.getPointFromBlock(i, piece.grid);
-            if (pointer.y == 9) {
-                let point = {
-                    x: pointer.x + 1,
-                    y: 0
-                }
-                let block = helper.getBlock(point, piece.grid);
-                if (block) {
-                    block.setAttribute('extra', 'extra');
-                    block.removeAttribute('used');
-                    block.removeAttribute('shadow');
-                }
+            let point = {
+                x: pointer.x,
+                y: pointer.y + 1
+            }
+            let newBlock = helper.getBlock(point, piece.grid);
+            if (newBlock.hasAttribute('used')) {
+                return true;
+                break;
             }
         }
     }
@@ -288,7 +306,9 @@ module.exports = {
     left: left,
     right: right,
     rotate: rotate,
-    makeUsed: makeUsed
+    makeUsed: makeUsed,
+    isLeftCollision: isLeftCollision,
+    isRightCollision: isRightCollision
 }
 
 },{"./helper.js":3}],3:[function(require,module,exports){

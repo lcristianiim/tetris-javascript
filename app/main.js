@@ -135,9 +135,14 @@ document.body.onkeydown = function (event) {
     // left key
     if (event.keyCode == 37) {
         if (!check.left(piece)) {
-            piece.moveLeft();
-            piece.drawShape();
-            clearExtraBlocks();
+
+            if (check.isLeftCollision(piece)) {
+                console.log('Left collision with another piece');
+            } else {
+                piece.moveLeft();
+                piece.drawShape();
+                clearExtraBlocks();
+            }
 
         } else {
             console.log('Margin left reached');
@@ -148,9 +153,14 @@ document.body.onkeydown = function (event) {
     // right key
     if (event.keyCode == 39) {
         if (!check.right(piece)) {
-            piece.moveRight();
-            piece.drawShape();
-            clearExtraBlocks();
+
+            if (check.isRightCollision(piece)) {
+                console.log('Right collision with another piece');
+            } else {
+                piece.moveRight();
+                piece.drawShape();
+                clearExtraBlocks();
+            }
         } else {
             console.log('Margin right reached');
         }
