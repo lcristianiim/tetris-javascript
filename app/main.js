@@ -89,7 +89,7 @@ function checkDown () {
     }
 }
 
-// Removes the shadow, extra, active states
+// Removes the shadow, extra, active, pre states
 function cleanUp () {
     let blocks = document.getElementsByClassName('column');
     for (let i = 0; i < blocks.length; i++) {
@@ -97,6 +97,7 @@ function cleanUp () {
             blocks[i].removeAttribute('shadow');
             blocks[i].removeAttribute('extra');
             blocks[i].removeAttribute('active');
+            blocks[i].removeAttribute('pre');
         }
     }
 }
@@ -107,9 +108,14 @@ document.body.onkeydown = function (event) {
 
     // up key
     if (event.keyCode == 38) {
-        piece.rotate();
-        piece.drawShape();
-        check.rotate(piece);
+        if (check.rotate(piece)) {
+            console.log('Cannot rotate, grid in the way');
+        }
+        else if (check.rotateCollision(piece)) {
+            console.log('Cannot rotate, piece in the way');
+        } else {
+            piece.rotate();
+        }
     }
 
     // down key

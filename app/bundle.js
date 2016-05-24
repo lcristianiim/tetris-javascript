@@ -90,7 +90,7 @@ function checkDown () {
     }
 }
 
-// Removes the shadow, extra, active states
+// Removes the shadow, extra, active, pre states
 function cleanUp () {
     let blocks = document.getElementsByClassName('column');
     for (let i = 0; i < blocks.length; i++) {
@@ -98,6 +98,7 @@ function cleanUp () {
             blocks[i].removeAttribute('shadow');
             blocks[i].removeAttribute('extra');
             blocks[i].removeAttribute('active');
+            blocks[i].removeAttribute('pre');
         }
     }
 }
@@ -108,9 +109,14 @@ document.body.onkeydown = function (event) {
 
     // up key
     if (event.keyCode == 38) {
-        piece.rotate();
-        piece.drawShape();
-        check.rotate(piece);
+        if (check.rotate(piece)) {
+            console.log('Cannot rotate, grid in the way');
+        }
+        else if (check.rotateCollision(piece)) {
+            console.log('Cannot rotate, piece in the way');
+        } else {
+            piece.rotate();
+        }
     }
 
     // down key
@@ -181,6 +187,9 @@ function makeUsed() {
         }
         if (blocks[i].hasAttribute('shadow')) {
             blocks[i].removeAttribute('shadow');
+        }
+        if (blocks[i].hasAttribute('pre')) {
+            blocks[i].removeAttribute('pre');
         }
     }
 }
@@ -265,39 +274,40 @@ function isRightCollision(piece) {
     }
 }
 
+// Returns true if grid collision detected
 function rotate (piece) {
-    var columnBlocks = document.getElementsByClassName('column');
-    for (var i = 0; i < columnBlocks.length; i++) {
-        if (columnBlocks[i].getAttribute("active") == "true") {
-            var pointer = helper.getPointFromBlock(i, piece.grid);
-            if (pointer.y == 0) {
-                for (let j = 0; j < piece.grid.rows; j++) {
-                    newPoint = {
-                        x: j,
-                        y: piece.grid.columns - 1
-                    }
-                    let block = helper.getBlock(newPoint, piece.grid);
-                    if (block.getAttribute("shadow") == "true") {
-                        block.removeAttribute('used');
-                        block.removeAttribute('shadow');
-                    }
-                }
-            }
+    piece.getNextDimensions();
 
-            if (pointer.y == 9) {
-                for (let j = 0; j < piece.grid.rows; j++) {
-                    newPoint = {
-                        x: j,
-                        y: 0
-                    }
-                    let block = helper.getBlock(newPoint, piece.grid);
-                    if (block.getAttribute("shadow") == "true") {
-                        block.removeAttribute('used');
-                        block.removeAttribute('shadow');
-                    }
-                }
-            }
+    if (piece.pivot.y > piece.grid.columns - piece.nextWidth) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Returns true if collision with 'used' block detected
+function rotateCollision(piece) {
+    var blocks = document.getElementsByClassName('column');
+    for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].hasAttribute('used') && blocks[i].hasAttribute('pre')) {
+            return true;
+            break;
         }
+    }
+}
+
+function next(obj, specificKey) {
+    var found = false;
+    for (var key in obj) {
+        if (found == true) {
+            return key;
+            break;
+        }
+        if (key == 'd') {
+            return 'a';
+            break;
+        }
+        if (key == specificKey) {found = true}
     }
 }
 
@@ -308,7 +318,8 @@ module.exports = {
     rotate: rotate,
     makeUsed: makeUsed,
     isLeftCollision: isLeftCollision,
-    isRightCollision: isRightCollision
+    isRightCollision: isRightCollision,
+    rotateCollision: rotateCollision
 }
 
 },{"./helper.js":3}],3:[function(require,module,exports){
@@ -462,49 +473,68 @@ function next(obj, specificKey) {
     }
 }
 
+function matrixPoint(point, grid, color) {
+    let column = document.getElementsByClassName('column');
+    let block = point.x * grid.columns + point.y;
+    if (column[block]) {
+        column[block].setAttribute('pre', 'true');
+    }
+};
+
+function deMatrixPoint(point, grid, color) {
+    let column = document.getElementsByClassName('column');
+    let block = point.x * grid.columns + point.y;
+    if (column[block]) {
+        column[block].removeAttribute('pre');
+    }
+};
+
 var piece = {
     width: '',
     height: '',
+    nextWidth: '',
+    nextHeight: '',
     pivot: '',
     grid: '',
     color: '',
     currentShapeName: '',
     nextShape: '',
     rotate: function () {
+
+        this.eraseShape();
+
+        this.currentShapeName = this.nextShape;
+        this.currentShape = this.shape[this.currentShapeName];
         this.nextShape = next(this.shape, this.currentShapeName);
 
-        this.getDimensions();
-        var preWidth = this.shape[this.nextShape].value[0].length - 2;
-        var preHeight = this.shape[this.nextShape].value.length - 2;
-
-        // Check if there is enough space in grid to rotate the piece
-        if (this.pivot.y + 1 > this.grid.columns - preWidth) {
-            console.log('Cannot rotate');
-        } else {
-        this.currentShapeName = this.nextShape;
-            this.eraseShape();
-            this.currentShape = this.shape[this.currentShapeName];
-            this.drawShape();
-        }
+	this.drawPre();
+        this.drawShape();
     },
     moveDown: function () {
+	this.erasePre();
         this.eraseShape();
         this.pivot.x += 1;
         this.drawShape();
+	this.drawPre();
     },
     moveLeft: function () {
+	this.erasePre();
         this.eraseShape();
         this.pivot.y += -1;
         this.drawShape();
+	this.drawPre();
     },
     moveRight: function () {
+	this.erasePre();
         this.eraseShape();
         this.pivot.y += 1;
         this.drawShape();
+	this.drawPre();
     },
     init: function (grid, color) {
         this.setShape();
         this.getDimensions();
+        this.nextShapeF();
 
         this.color = color;
         this.grid = grid;
@@ -513,6 +543,7 @@ var piece = {
             y: helper.randomIntFromInterval(0, grid.columns - this.width)
         };
 
+	this.drawPre();
         this.drawShape();
     },
     setShape: function () {
@@ -521,9 +552,16 @@ var piece = {
         this.currentShapeName = randomS;
         this.currentShape = this.shape[randomS];
     },
+    nextShapeF: function () {
+        this.nextShape = next(this.shape, this.currentShapeName);
+    },
     getDimensions: function () {
         this.width = this.currentShape.value[0].length;
         this.height = this.currentShape.value.length;
+    },
+    getNextDimensions: function () {
+        this.nextWidth = this.shape[this.nextShape].value[0].length;
+        this.nextHeight = this.shape[this.nextShape].value.length;
     },
     drawShape: function () {
         for (var i = 0; i < this.currentShape.value.length; i++) {
@@ -552,6 +590,36 @@ var piece = {
                         if (helper.getBlock(newPoint, this.grid)) {
                             helper.getBlock(newPoint, this.grid).setAttribute('shadow', 'true');
                         }
+                    }
+                }
+            }
+        }
+    },
+    drawPre: function () {
+	for (var i = 0; i < this.shape[this.nextShape].value.length; i++) {
+	    for (var j = 0; j < this.shape[this.nextShape].value[0].length; j++) {
+		if (this.shape[this.nextShape].value[i][j]) {
+		    if (this.shape[this.nextShape].value[i][j] == 1) {
+			let newPoint = {
+			    x: this.pivot.x + i,
+			    y: this.pivot.y + j
+			};
+			matrixPoint(newPoint, this.grid, this.color);
+		    }
+		}
+	    }
+	}
+    },
+    erasePre: function () {
+        for (var i = 0; i < this.shape[this.nextShape].value.length; i++) {
+            for (var j = 0; j < this.shape[this.nextShape].value[0].length; j++) {
+                if (this.shape[this.nextShape].value[i][j]) {
+                    if (this.shape[this.nextShape].value[i][j] == 1) {
+                        let newPoint = {
+                            x: this.pivot.x + i,
+                            y: this.pivot.y + j
+                        };
+                        deMatrixPoint(newPoint, this.grid, this.color);
                     }
                 }
             }
@@ -591,36 +659,30 @@ var lPiece = Object.create(piece, {
         value: {
             a: {
                 value: [
-                    [2, 2, 2, 0],
-                    [2, 1, 2, 0],
-                    [2, 1, 2, 2],
-                    [2, 1, 1, 2],
-                    [2, 2, 2, 2]
+
+                    [1, 0],
+                    [1, 0],
+                    [1, 1]
+
                 ]
             },
             b: {
                 value: [
-                    [0, 0, 2, 2, 2],
-                    [2, 2, 2, 1, 2],
-                    [2, 1, 1, 1, 2],
-                    [2, 2, 2, 2, 2]
+                    [0, 0, 1],
+                    [1, 1, 1]
                 ]
             },
             c: {
                 value: [
-                    [2, 2, 2, 2],
-                    [2, 1, 1, 2],
-                    [2, 2, 1, 2],
-                    [0, 2, 1, 2],
-                    [0, 2, 2, 2]
+                    [1, 1],
+                    [0, 1],
+                    [0, 1]
                 ]
             },
             d: {
                 value: [
-                    [2, 2, 2, 2, 2],
-                    [2, 1, 1, 1, 2],
-                    [2, 1, 2, 2, 2],
-                    [2, 2, 2, 0, 0]
+                    [1, 1, 1],
+                    [1, 0, 0]
                 ]
             }
         }
@@ -638,36 +700,28 @@ var linePiece = Object.create(piece, {
         value: {
             a: {
                 value: [
-                    [2, 2, 2],
-                    [2, 1, 2],
-                    [2, 1, 2],
-                    [2, 1, 2],
-                    [2, 1, 2],
-                    [2, 2, 2]
+                    [1],
+                    [1],
+                    [1],
+                    [1]
                 ]
             },
             b: {
                 value: [
-                    [2, 2, 2, 2, 2, 2],
-                    [2, 2, 2, 2, 2, 2],
-                    [1, 1, 1, 1, 2, 2]
+                    [1, 1, 1, 1]
                 ]
             },
             c: {
                 value: [
-                    [2, 2, 2],
-                    [2, 1, 2],
-                    [2, 1, 2],
-                    [2, 1, 2],
-                    [2, 1, 2],
-                    [2, 2, 2]
+                    [1],
+                    [1],
+                    [1],
+                    [1]
                 ]
             },
             d: {
                 value: [
-                    [2, 2, 2, 2, 2, 2],
-                    [2, 2, 2, 2, 2, 2],
-                    [1, 1, 1, 1, 2, 2]
+                    [1, 1, 1, 1]
                 ]
             }
         }
@@ -685,36 +739,28 @@ var zPiece = Object.create(piece, {
         value: {
             a: {
                 value: [
-                    [0, 2, 2, 2, 2],
-                    [2, 2, 1, 1, 2],
-                    [2, 1, 1, 2, 2],
-                    [2, 2, 2, 2, 0]
+                    [0, 1, 1],
+                    [1, 1, 0]
                 ]
             },
             b: {
                 value: [
-                    [2, 2, 2, 0],
-                    [2, 1, 2, 2],
-                    [2, 1, 1, 2],
-                    [2, 2, 1, 2],
-                    [0, 2, 2, 2]
+                    [1, 0],
+                    [1, 1],
+                    [0, 1]
                 ]
             },
             c: {
                 value: [
-                    [0, 2, 2, 2, 2],
-                    [2, 2, 1, 1, 2],
-                    [2, 1, 1, 2, 2],
-                    [2, 2, 2, 2, 0]
+                    [0, 1, 1],
+                    [1, 1, 0]
                 ]
             },
             d: {
                 value: [
-                    [2, 2, 2, 0],
-                    [2, 1, 2, 2],
-                    [2, 1, 1, 2],
-                    [2, 2, 1, 2],
-                    [0, 2, 2, 2]
+                    [1, 0],
+                    [1, 1],
+                    [0, 1]
                 ]
             }
         }
@@ -732,34 +778,28 @@ var tPiece = Object.create(piece, {
         value: {
             a: {
                 value: [
-                    [0, 2, 2, 2, 0],
-                    [2, 2, 1, 2, 2],
-                    [2, 1, 1, 1, 2],
-                    [2, 2, 2, 2, 2]
+                    [0, 1, 0],
+                    [1, 1, 1]
                 ]
             },
             b: {
                 value: [
-                    [0, 2, 2, 2, 0],
-                    [2, 2, 1, 2, 2],
-                    [2, 1, 1, 2, 2],
-                    [2, 2, 1, 2, 2]
+                    [0, 1],
+                    [1, 1],
+                    [0, 1]
                 ]
             },
             c: {
                 value: [
-                    [2, 2, 2, 2, 2],
-                    [2, 2, 2, 2, 2],
-                    [2, 1, 1, 1, 2],
-                    [0, 2, 1, 2, 0]
+                    [1, 1, 1],
+                    [0, 1, 0]
                 ]
             },
             d: {
                 value: [
-                    [2, 2, 2, 2, 2],
-                    [2, 2, 1, 2, 2],
-                    [2, 2, 1, 1, 2],
-                    [0, 2, 1, 2, 0]
+                    [1, 0],
+                    [1, 1],
+                    [1, 0]
                 ]
             }
         }
