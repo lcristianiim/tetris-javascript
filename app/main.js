@@ -117,6 +117,7 @@ document.body.onkeydown = function (event) {
         visualizeUsed();
         if (checkDown()) {
             console.log('Collision detected');
+            check.makeUsed();
             getPiece();
         } else {
             if (!check.down(piece)) {
@@ -125,6 +126,7 @@ document.body.onkeydown = function (event) {
                 piece.drawShape();
 
             } else {
+                check.makeUsed();
                 getPiece();
             }
         }

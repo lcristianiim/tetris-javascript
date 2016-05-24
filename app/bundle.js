@@ -118,6 +118,7 @@ document.body.onkeydown = function (event) {
         visualizeUsed();
         if (checkDown()) {
             console.log('Collision detected');
+            check.makeUsed();
             getPiece();
         } else {
             if (!check.down(piece)) {
@@ -126,6 +127,7 @@ document.body.onkeydown = function (event) {
                 piece.drawShape();
 
             } else {
+                check.makeUsed();
                 getPiece();
             }
         }
@@ -159,12 +161,16 @@ document.body.onkeydown = function (event) {
 },{"../lib/check.js":2,"../lib/helper":3,"../lib/init-tetris":4,"../lib/tetris-shapes":5}],2:[function(require,module,exports){
 const helper = require('./helper.js');
 
+// Turns all active blocks to 'used' and removes all 'shadows'
 function makeUsed() {
     let blocks = document.getElementsByClassName('column');
     for (let i = 0; i < blocks.length; i++) {
         if (blocks[i].hasAttribute('active')) {
             blocks[i].removeAttribute('active');
             blocks[i].setAttribute('used', 'true');
+        }
+        if (blocks[i].hasAttribute('shadow')) {
+            blocks[i].removeAttribute('shadow');
         }
     }
 }
@@ -177,15 +183,6 @@ function down (piece) {
             var pointer = helper.getPointFromBlock(i, piece.grid);
             if (pointer.x == piece.grid.rows - 1) {
 
-                makeUsed();
-                console.log('bottom reached');
-
-                for (var j = 0; j < columnBlocks.length; j++) {
-                    if (columnBlocks[j].getAttribute("active") == "true") {
-                        columnBlocks[j].removeAttribute("active");
-                    }
-                }
-
                 return true;
                 break;
             }
@@ -193,6 +190,7 @@ function down (piece) {
     }
 }
 
+// Returns true if margin left reached
 function left (piece) {
     var columnBlocks = document.getElementsByClassName('column');
     for (var i = 0; i < columnBlocks.length; i++) {
@@ -289,7 +287,8 @@ module.exports = {
     down: down,
     left: left,
     right: right,
-    rotate: rotate
+    rotate: rotate,
+    makeUsed: makeUsed
 }
 
 },{"./helper.js":3}],3:[function(require,module,exports){
