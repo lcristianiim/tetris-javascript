@@ -102,107 +102,6 @@ function cleanUp () {
     }
 }
 
-// Returns true if all in a row are 'used'
-function verifyRows() {
-    var rows = document.getElementsByClassName('row');
-    var count = 0;
-
-    for (let i = 0; i < rows.length; i++) {
-        count = 0;
-        for (let j = 0; j < grid.columns; j++) {
-            if (rows[i].children[j].hasAttribute('used')) {
-                count++;
-            }
-            // all columns in a row are 'used'
-            if (count == grid.columns) {
-
-                for (let k = 0; k < grid.columns; k++) {
-                    rows[i].children[k].setAttribute('dissapear', true);
-                    rows[i].children[k].removeAttribute('used');
-                    rows[i].children[k].removeAttribute('style');
-                }
-
-                var blocks = document.getElementsByClassName('column');
-                var status = false;
-
-                for (let m = blocks.length; m > 0; m--) {
-                    if (blocks[m] && blocks[m].hasAttribute('dissapear')) {
-                        status = true;
-                    }
-
-                    if (status) {
-                    if (blocks[m].hasAttribute('used')) {
-                        if (blocks[m].hasAttribute('dissapear')) {status = false}
-
-                        if (blocks[m].attributes.style) {
-                            var customStyle = blocks[m].attributes.style.textContent;
-                            function hackyGetColor (customStyle) {
-                                var color = customStyle.split(" ");
-                                return color[color.length - 1].split('"')[0];
-                            }
-                            var hackedColor = hackyGetColor(customStyle);
-
-                            let point = helper.getPointFromBlock(m, grid);
-                            let newPoint = {
-                                x: point.x + 1,
-                                y: point.y
-                            }
-
-                            let customBlock = helper.getBlock(newPoint, grid);
-                            if (customBlock) {
-                                customBlock.setAttribute('used', true);
-                                customBlock.setAttribute('style', 'background: ' + hackedColor);
-                                blocks[m].removeAttribute('used');
-                                blocks[m].removeAttribute('style');
-                            }
-                        }
-
-                    }
-
-                }
-            }
-        }
-    }
-    let allBlocks = document.getElementsByClassName('column');
-    for (let z = 0; z < allBlocks.length; z++) {
-        allBlocks[z].removeAttribute('dissapear');
-    }
-}
-}
-
-                // move all blocks down by one row
-                // var blocks = document.getElementsByClassName('column');
-                // for (let m = 0; m < blocks.length; m++) {
-                //
-                //     if (blocks[m].hasAttribute('used')) {
-                //
-                //         if (blocks[m].attributes.style) {
-                //             var customStyle = blocks[m].attributes.style.textContent;
-                //             function hackyGetColor (customStyle) {
-                //                 var color = customStyle.split(" ");
-                //                 return color[color.length - 1].split('"')[0];
-                //             }
-                //             var hackedColor = hackyGetColor(customStyle);
-                //
-                //             let point = helper.getPointFromBlock(m, grid);
-                //             let newPoint = {
-                //                 x: point.x + 1,
-                //                 y: point.y
-                //             }
-                //
-                //             let customBlock = helper.getBlock(newPoint, grid);
-                //             if (customBlock) {
-                //                 customBlock.setAttribute('used', true);
-                //                 customBlock.setAttribute('style', 'background: ' + hackedColor);
-                //                 blocks[m].removeAttribute('used');
-                //                 blocks[m].removeAttribute('style');
-                //             }
-                //         }
-                //
-                //     }
-                // }
-
-
 // Handling the keydown event
 document.body.onkeydown = function (event) {
 
@@ -218,13 +117,45 @@ document.body.onkeydown = function (event) {
         }
     }
 
+    function checkGameOver() {
+        var blocks = document.getElementsByClassName('column');
+        for (var i = 0; i > blocks.length; i++) {
+            if (blocks[i].hasAttribute('active')) {
+                break;
+                return true;
+            }
+        }
+    }
+
+    // Begin the game with spacebar
+    if (event.keyCode == 32) {
+        setInterval(function() {
+            if (checkDown()) {
+                console.log('Collision detected');
+                check.makeUsed();
+                check.verifyRows(piece);
+                getPiece();
+            } else {
+                if (!check.down(piece)) {
+                    piece.moveDown();
+                    piece.drawShape();
+
+                } else {
+                    check.makeUsed();
+                    check.verifyRows(piece);
+                    getPiece();
+                }
+            }
+        }, 1000);
+    }
+
     // down key
     if (event.keyCode == 40) {
         // visualizeUsed();
         if (checkDown()) {
             console.log('Collision detected');
             check.makeUsed();
-            verifyRows();
+            check.verifyRows(piece);
             getPiece();
         } else {
             if (!check.down(piece)) {
@@ -233,7 +164,7 @@ document.body.onkeydown = function (event) {
 
             } else {
                 check.makeUsed();
-                verifyRows();
+                check.verifyRows(piece);
                 getPiece();
             }
         }
