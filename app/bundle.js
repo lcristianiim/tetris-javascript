@@ -120,10 +120,10 @@ document.body.onkeydown = function (event) {
 
     function checkGameOver() {
         var blocks = document.getElementsByClassName('column');
-        for (var i = 0; i > blocks.length; i++) {
+        for (var i = 0; i < 10; i++) {
             if (blocks[i].hasAttribute('active')) {
-                break;
                 return true;
+                break;
             }
         }
     }
@@ -133,40 +133,61 @@ document.body.onkeydown = function (event) {
         setInterval(function() {
             if (checkDown()) {
                 console.log('Collision detected');
-                check.makeUsed();
-                check.verifyRows(piece);
-                getPiece();
+                if (checkGameOver()) {
+                    console.log('Game over');
+                    alert('Game Over. Press f5 to restart');
+                } else {
+                    check.makeUsed();
+                    check.verifyRows(piece);
+                    getPiece();
+                }
             } else {
                 if (!check.down(piece)) {
                     piece.moveDown();
                     piece.drawShape();
 
                 } else {
-                    check.makeUsed();
-                    check.verifyRows(piece);
-                    getPiece();
+
+                    if (checkGameOver()) {
+                        console.log('Game over');
+                        alert('Game Over. Press f5 to restart');
+                    } else {
+                        check.makeUsed();
+                        check.verifyRows(piece);
+                        getPiece();
+                    }
                 }
             }
-        }, 1000);
+        }, 500);
     }
 
     // down key
     if (event.keyCode == 40) {
-        // visualizeUsed();
         if (checkDown()) {
             console.log('Collision detected');
-            check.makeUsed();
-            check.verifyRows(piece);
-            getPiece();
+            if (checkGameOver()) {
+                console.log('Game over');
+                alert('Game Over. Press f5 to restart');
+            } else {
+                check.makeUsed();
+                check.verifyRows(piece);
+                getPiece();
+            }
         } else {
             if (!check.down(piece)) {
                 piece.moveDown();
                 piece.drawShape();
 
             } else {
-                check.makeUsed();
-                check.verifyRows(piece);
-                getPiece();
+
+                if (checkGameOver()) {
+                    console.log('Game over');
+                    alert('Game Over. Press f5 to restart');
+                } else {
+                    check.makeUsed();
+                    check.verifyRows(piece);
+                    getPiece();
+                }
             }
         }
     }
@@ -907,11 +928,49 @@ var tPiece = Object.create(piece, {
     }
 });
 
+var cubePiece = Object.create(piece, {
+    name: { value: 'tPiece' },
+    currentShape: {
+        value: 'a',
+        writable: true,
+        configurable: true
+    },
+    shape: {
+        value: {
+            a: {
+                value: [
+                    [1, 1],
+                    [1, 1]
+                ]
+            },
+            b: {
+                value: [
+                    [1, 1],
+                    [1, 1]
+                ]
+            },
+            c: {
+                value: [
+                    [1, 1],
+                    [1, 1]
+                ]
+            },
+            d: {
+                value: [
+                    [1, 1],
+                    [1, 1]
+                ]
+            }
+        }
+    }
+});
+
 module.exports = {
     linePiece: linePiece,
     lPiece: lPiece,
     zPiece: zPiece,
-    tPiece: tPiece
+    tPiece: tPiece,
+    cubePiece: cubePiece
 }
 
 },{"./helper":3}]},{},[1]);
