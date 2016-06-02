@@ -1,12 +1,12 @@
 {
-  "name": "new-tetris",
+  "name": "tetris-javascript",
   "version": "1.0.0",
-  "description": "",
+  "description": "## Installation Just clone the repo and visit index.html",
   "main": "index.js",
   "scripts": {
     "test": "tap test/*.js"
   },
-  "author": "",
+  "author": "Szabo Cristian",
   "license": "ISC",
   "devDependencies": {
     "browserify": "^13.0.0",
@@ -14,5 +14,17 @@
     "tap": "^5.7.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lcristianiim/tetris-javascript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lcristianiim/tetris-javascript/issues"
+  },
+  "homepage": "https://github.com/lcristianiim/tetris-javascript#readme"
 }
