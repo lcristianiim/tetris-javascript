@@ -1,4 +1,5 @@
-# new-tetris
+# tetris-javascript
+[![tetris-javascript](http://i.imgur.com/eQOb3mf.jpg)](#)
 
 ## Installation
 Just clone the repo and visit index.html
